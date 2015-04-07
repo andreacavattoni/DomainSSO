@@ -1,6 +1,8 @@
 <?php
-
-function domainsso_init(){
+/*
+ * Function hook_init()
+ */
+function domainsso_init() {
 	if(isset($_SESSION['domainsso_user_login']) && $_SESSION['domainsso_user_login'] && arg(0) != 'domainsso'){
 		drupal_add_js(drupal_get_path('module', 'domainsso').'/domainsso.js');
 		
@@ -11,7 +13,7 @@ function domainsso_init(){
 		$curdomainurl = '';
 		foreach($domains as $domain){
 			if($current['domain_id'] != $domain['domain_id']){
-				$data[] = $domain['path'].'?q=domainsso/sync&sid='.session_id().'&r='.time();
+				$data[] = $domain['path'].'?q=domainsso/sync&sid=' . session_id() . '&r=' . time() . '&hash=' . md5(session_id() . drupal_get_hash_salt());
 			}else{
 				$curdomainurl = url('domainsso/synced', array('query' => array('r' => time())));
 			}
@@ -21,7 +23,10 @@ function domainsso_init(){
 	}
 }
 
-function domainsso_menu(){
+/*
+ * Function hook_menu()
+ */
+function domainsso_menu() {
   $items['domainsso/sync'] = array(
     'page callback' => 'domainsso_sync_page',
     'access callback' => true,
@@ -37,38 +42,37 @@ function domainsso_menu(){
   return $items;
 }
 
-function domainsso_synced_page(){
+function domainsso_synced_page() {
 	unset($_SESSION['domainsso_user_login']);
 }
 
-function domainsso_sync_page(){
+function domainsso_sync_page() {
 	header('Content-Type: application/javascript');
 	
 	$src_sid = $_GET['sid'];
-	$uid = db_query("select uid from {sessions} where sid=:sid", array(':sid' => $src_sid))->fetchField();
-	
-	if($uid){
-		/*
-		$cur_sid = session_id();
-		$cur_uid = db_query("select uid from {sessions} where sid=:sid", array(':sid' => $cur_sid))->fetchField();
-		if($cur_uid !== false){
-			db_query("update {sessions} set uid=:uid where sid=:sid", array(':uid' => $uid, ':sid' => $cur_sid));
-		}else{
-			$session = array('uid' => $uid, 'sid' => $cur_sid, 'hostname' => $_SERVER['HTTP_HOST'], 'timestamp' => time(), 'cache' => 0, 'session' => '');
-			drupal_write_record('sessions', $session);
-		}*/
-		global $user;
-		$user = user_load($uid);
-		drupal_session_regenerate();
-	}
-	
+	$hash = $_GET['hash'];
+	if ($hash == md5($src_sid . drupal_get_hash_salt())) {
+  	$uid = db_query("select uid from {sessions} where sid=:sid", array(':sid' => $src_sid))->fetchField();
+  	if($uid) {
+  		global $user;
+  		$user = user_load($uid);
+  		drupal_session_regenerate();
+  	}
+  }
 }
 
-function domainsso_user_login(&$edit, $account){
-	$_SESSION['domainsso_user_login'] = true;
+/*
+ * Function hook_user_login()
+ */
+function domainsso_user_login(&$edit, $account) {
+	$_SESSION['domainsso_user_login'] = TRUE;
 }
 
-function domainsso_user_logout($account){
+/*
+ * Function hook_user_logout()
+ * Unset all user's other sessions.
+ */
+function domainsso_user_logout($account) {
 	$sid = session_id();
 	global $user;
 	
