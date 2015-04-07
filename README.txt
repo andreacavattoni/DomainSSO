@@ -1,3 +1,3 @@
-This module allows us have a pseudo-single sign-on for sites that use with Domain Access and Drupal 7. Although the user is logging on through different domains, Drupal will generate a session for each affiliated domain listed through Domain Access.
+This module allows us have a pseudo single-sign-on for sites that use Domain Access with Drupal 7. Although the user is logging on through different domains, Drupal will generate a session for each configured domain (eg, when you log in to example.com, you will also be logged in to example2.com.)
 
-The module synchronizes sessions so when you will log in into example.com you will be logged in also in example2.com. It does this by adding the session ID into the user table through ajax, and regenerating the Drupal session for each entry.
+It does this by adding the session ID into the user table through an ajax request, and regenerating the Drupal session for each domain registered through Domain Access.
