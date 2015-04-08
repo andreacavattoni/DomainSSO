@@ -1,5 +1,3 @@
-This simple module allow to have a single sign on for a website network made with domain access and Drupal 7 using different primary domain.
+This module allows us have a pseudo single-sign-on for sites that use Domain Access with Drupal 7. Although the user is logging on through different domains, Drupal will generate a session for each configured domain (eg, when you log in to example.com, you will also be logged in to example2.com.)
 
-It simple sincronize the sessions so when you will log in into example.com you will be logged in also in example2.com basically getting the cookie throw ajax.
-
-i've also made a version for wesites using varnish and esi (cached pages for auth users).
+It does this by adding the session ID into the user table through an ajax request, and regenerating the Drupal session for each domain registered through Domain Access.
