@@ -3,7 +3,7 @@
  * Function hook_init()
  */
 function domainsso_init() {
-	if(isset($_SESSION['domainsso_user_login']) && $_SESSION['domainsso_user_login'] && arg(0) != 'domainsso'){
+	if (isset($_SESSION['domainsso_user_login']) && $_SESSION['domainsso_user_login'] && arg(0) != 'domainsso') {
 		drupal_add_js(drupal_get_path('module', 'domainsso').'/domainsso.js');
 		
 		$current = domain_get_domain();
@@ -11,10 +11,10 @@ function domainsso_init() {
 		
 		$data = array();
 		$curdomainurl = '';
-		foreach($domains as $domain){
-			if($current['domain_id'] != $domain['domain_id']){
-				$data[] = $domain['path'].'?q=domainsso/sync&sid=' . session_id() . '&r=' . time() . '&hash=' . md5(session_id() . drupal_get_hash_salt());
-			}else{
+		foreach($domains as $domain) {
+			if ($current['domain_id'] != $domain['domain_id']) {
+				$data[] = $domain['path'] . '?q=domainsso/sync&sid=' . session_id() . '&r=' . time() . '&hash=' . md5(session_id() . drupal_get_hash_salt());
+			} else {
 				$curdomainurl = url('domainsso/synced', array('query' => array('r' => time())));
 			}
 		}
